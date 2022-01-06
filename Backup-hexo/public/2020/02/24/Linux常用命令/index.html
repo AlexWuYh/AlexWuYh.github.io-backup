@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.simpletodo.fun","root":"/","scheme":"Pisces","version":"7.7.1","exturl":false,"sidebar":{"position":"left","width":260,"display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="系统 uname -a**  查看内核&#x2F;操作系统&#x2F;CPU信息   head -n 1 &#x2F;etc&#x2F;issue  查看操作系统版本   *cat &#x2F;proc&#x2F;cpuinfo  查看CPU信息   hostname**  查看计算机名">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux常用命令">
+<meta property="og:url" content="http://www.simpletodo.fun/2020/02/24/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/index.html">
+<meta property="og:site_name" content="Simple Life">
+<meta property="og:description" content="系统 uname -a**  查看内核&#x2F;操作系统&#x2F;CPU信息   head -n 1 &#x2F;etc&#x2F;issue  查看操作系统版本   *cat &#x2F;proc&#x2F;cpuinfo  查看CPU信息   hostname**  查看计算机名">
+<meta property="article:published_time" content="2020-02-24T14:51:36.000Z">
+<meta property="article:modified_time" content="2020-02-24T14:52:25.121Z">
+<meta property="article:author" content="Alex Wu (Yinghao)">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.simpletodo.fun/2020/02/24/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Linux常用命令 | Simple Life</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Simple Life</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">Alex's Blog</p>
+  </div>
+
+  <div class="site-nav-right"></div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fa fa-fw fa-heartbeat"></i>Commonweal 404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://www.simpletodo.fun/2020/02/24/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://upyun.oneone.life/uPic/nCsOY9.jpg">
+      <meta itemprop="name" content="Alex Wu (Yinghao)">
+      <meta itemprop="description" content="😻一一是个小天使~😚">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Simple Life">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux常用命令
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-02-24 22:51:36 / Modified: 22:52:25" itemprop="dateCreated datePublished" datetime="2020-02-24T22:51:36+08:00">2020-02-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/02/24/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="post-meta-item leancloud_visitors" data-flag-title="Linux常用命令" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2020/02/24/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/02/24/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="系统"><a href="#系统" class="headerlink" title="系统"></a>系统</h2><ul>
+<li><p><strong>uname -a**</strong></p>
+<blockquote>
+<p>查看内核/操作系统/CPU信息</p>
+</blockquote>
+</li>
+<li><p><strong>head -n 1 /etc/issue</strong></p>
+<blockquote>
+<p>查看操作系统版本</p>
+</blockquote>
+</li>
+<li><p><strong>*cat /proc/cpuinfo</strong></p>
+<blockquote>
+<p>查看<code>CPU</code>信息</p>
+</blockquote>
+</li>
+<li><p><strong>hostname**</strong></p>
+<blockquote>
+<p>查看计算机名</p>
+</blockquote>
+<a id="more"></a></li>
+<li><p><strong>lspci -tv</strong></p>
+<blockquote>
+<p>列出所有<code>PCI</code>设备</p>
+</blockquote>
+</li>
+<li><p><strong>lsusb -tv</strong></p>
+<blockquote>
+<p>出所有USB设备</p>
+</blockquote>
+</li>
+<li><p><strong>lsmod</strong></p>
+<blockquote>
+<p>列出加载的内核模块</p>
+</blockquote>
+</li>
+<li><p><strong>env</strong></p>
+<blockquote>
+<p>查看环境变量</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="资源"><a href="#资源" class="headerlink" title="资源"></a>资源</h2><ul>
+<li><p><strong>free -m</strong></p>
+<blockquote>
+<p>查看内存使用量和交换区使用量</p>
+</blockquote>
+</li>
+<li><p><strong>df -h</strong></p>
+<blockquote>
+<p>查看各分区使用情况</p>
+</blockquote>
+</li>
+<li><p><strong>du -sh &lt;目录名&gt;</strong></p>
+<blockquote>
+<p>查看指定目录的大小</p>
+</blockquote>
+</li>
+<li><p><strong>grep MemTotal /proc/meminfo</strong></p>
+<blockquote>
+<p>查看内存总量</p>
+</blockquote>
+</li>
+<li><p><strong>grep MemFree /proc/meminfo</strong></p>
+<blockquote>
+<p>查看空闲内存量</p>
+</blockquote>
+</li>
+<li><p><strong>uptime</strong></p>
+<blockquote>
+<p>查看系统运行时间、用户数、负载</p>
+</blockquote>
+</li>
+<li><p><strong>cat /proc/loadavg</strong></p>
+<blockquote>
+<p>查看系统负载</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="磁盘和分区"><a href="#磁盘和分区" class="headerlink" title="磁盘和分区"></a>磁盘和分区</h2><ul>
+<li><p><strong>mount | column -t</strong></p>
+<blockquote>
+<p>查看挂接的分区状态</p>
+</blockquote>
+</li>
+<li><p><strong>fdisk -l</strong></p>
+<blockquote>
+<p>查看所有分区</p>
+</blockquote>
+</li>
+<li><p><strong>swapon -s</strong></p>
+<blockquote>
+<p>查看所有交换分区</p>
+</blockquote>
+</li>
+<li><p><strong>hdparm -i /dev/hda</strong></p>
+<blockquote>
+<p>查看磁盘参数(仅适用于IDE设备)</p>
+</blockquote>
+</li>
+<li><p><strong>dmesg | grep IDE</strong></p>
+<blockquote>
+<p>查看启动时IDE设备检测状况</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h2><ul>
+<li><p><strong>ifconfig</strong></p>
+<blockquote>
+<p>查看所有网络接口的属性</p>
+</blockquote>
+</li>
+<li><p><strong>iptables -L</strong></p>
+<blockquote>
+<p>查看防火墙设置</p>
+</blockquote>
+</li>
+<li><p><strong>route -n</strong></p>
+<blockquote>
+<p>查看路由表</p>
+</blockquote>
+</li>
+<li><p><strong>netstat -lntp</strong></p>
+<blockquote>
+<p>查看所有监听端口</p>
+</blockquote>
+</li>
+<li><p><strong>netstat -antp</strong></p>
+<blockquote>
+<p>查看所有已经建立的连接</p>
+</blockquote>
+</li>
+<li><p><strong>netstat -s</strong></p>
+<blockquote>
+<p>查看网络统计信息</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h2><ul>
+<li><p><strong>ps -ef</strong></p>
+<blockquote>
+<p>查看所有进程</p>
+</blockquote>
+</li>
+<li><p><strong>top</strong></p>
+<blockquote>
+<p>实时显示进程状态</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="用户"><a href="#用户" class="headerlink" title="用户"></a>用户</h2><ul>
+<li><p><strong>w</strong></p>
+<blockquote>
+<p>查看活动用户</p>
+</blockquote>
+</li>
+<li><p><strong>id &lt;用户名&gt;</strong></p>
+<blockquote>
+<p>查看指定用户信息</p>
+</blockquote>
+</li>
+<li><p><strong>last</strong></p>
+<blockquote>
+<p>查看用户登录日志</p>
+</blockquote>
+</li>
+<li><p><strong>cut -d: -f1 /etc/passwd</strong></p>
+<blockquote>
+<p>查看系统所有用户</p>
+</blockquote>
+</li>
+<li><p><strong>cut -d: -f1 /etc/group</strong></p>
+<blockquote>
+<p>查看系统所有组</p>
+</blockquote>
+</li>
+<li><p><strong>crontab -l</strong></p>
+<blockquote>
+<p>查看当前用户的计划任务</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="服务"><a href="#服务" class="headerlink" title="服务"></a>服务</h2><ul>
+<li><p><strong>chkconfig –list</strong></p>
+<blockquote>
+<p>列出所有系统服务</p>
+</blockquote>
+</li>
+<li><p><strong>chkconfig –list | grep on</strong></p>
+<blockquote>
+<p>列出所有启动的系统服务</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="程序"><a href="#程序" class="headerlink" title="程序"></a>程序</h2><ul>
+<li><p><strong>apt-get update</strong></p>
+<blockquote>
+<p>在修改<code>/etc/apt/sources.list</code>或者<code>/etc/apt/preferences</code>之后运行该命令。此外您需要定期运行这一命令以确保您的软件包列表是最新的。</p>
+</blockquote>
+</li>
+<li><p><strong>apt-get install packagename</strong></p>
+<blockquote>
+<p>安装一个新软件包（参见下文的aptitude）</p>
+</blockquote>
+</li>
+<li><p><strong>apt-get remove packagename</strong></p>
+<blockquote>
+<p>卸载一个已安装的软件包（保留配置文件）</p>
+</blockquote>
+</li>
+<li><p><strong>apt-get –purge remove packagename</strong></p>
+<blockquote>
+<p>卸载一个已安装的软件包（删除配置文件）</p>
+</blockquote>
+</li>
+<li><p><strong>dpkg –force-all –purge packagename</strong></p>
+<blockquote>
+<p>有些软件很难卸载，而且还阻止了别的软件的应用，就可以用这个，不过有点冒险。</p>
+</blockquote>
+</li>
+<li><p><strong>apt-get autoclean apt</strong></p>
+<blockquote>
+<p>会把已装或已卸的软件都备份在硬盘上，所以如果需要空间的话，可以让这个命令来删除你已经删掉的软件</p>
+</blockquote>
+</li>
+<li><p><strong>apt-get clean</strong></p>
+<blockquote>
+<p>这个命令会把安装的软件的备份也删除，不过这样不会影响软件的使用的。</p>
+</blockquote>
+</li>
+<li><p><strong>apt-get upgrade</strong></p>
+<blockquote>
+<p>更新所有已安装的软件包</p>
+</blockquote>
+</li>
+<li><p><strong>apt-get dist-upgrade</strong></p>
+<blockquote>
+<p>将系统升级到新版本</p>
+</blockquote>
+</li>
+<li><p><strong>apt-cache search string</strong></p>
+<blockquote>
+<p> 在软件包列表中搜索字符串</p>
+</blockquote>
+</li>
+<li><p>dpkg -l package-name-pattern</p>
+<blockquote>
+<p>列出所有与模式相匹配的软件包。如果您不知道软件包的全名，您可以使用“<strong><code>package-name-pattern</code></strong>”。</p>
+</blockquote>
+</li>
+<li><p><strong>aptitude</strong></p>
+<blockquote>
+<p>详细查看已安装或可用的软件包。与<code>apt-get</code>类似，<code>aptitude</code>可以通过命令行方式调用，但仅限于某些命令——最常见的有安装和卸载命令。由于<code>aptitude比apt-get</code>了解更多信息，可以说它更适合用来进行安装和卸载。</p>
+</blockquote>
+</li>
+<li><p><strong>apt-cache showpkg pkgs</strong></p>
+<blockquote>
+<p>显示软件包信息。</p>
+</blockquote>
+</li>
+<li><p><strong>apt-cache dumpavail</strong></p>
+<blockquote>
+<p>打印可用软件包列表。</p>
+</blockquote>
+</li>
+<li><p><strong>apt-cache show pkgs</strong></p>
+<blockquote>
+<p>显示软件包记录，类似于<code>dpkg –print-avail</code>。</p>
+</blockquote>
+</li>
+<li><p><strong>apt-cache pkgnames</strong></p>
+<blockquote>
+<p>打印软件包列表中所有软件包的名称。</p>
+</blockquote>
+</li>
+<li><p><strong>dpkg -S file</strong></p>
+<blockquote>
+<p>这个文件属于哪个已安装软件包。</p>
+</blockquote>
+</li>
+<li><p><strong>dpkg -L package</strong></p>
+<blockquote>
+<p>列出软件包中的所有文件。</p>
+</blockquote>
+</li>
+<li><p><strong>apt-file search filename</strong></p>
+<blockquote>
+<p>查找包含特定文件的软件包（不一定是已安装的），这些文件的文件名中含有指定的字符串。</p>
+</blockquote>
+</li>
+<li><p><strong>apt-file</strong></p>
+<blockquote>
+<p>是一个独立的软件包。您必须 先使用apt-get install来安装它，然后运行<code>apt-file update</code>。如果<code>apt-file search</code></p>
+</blockquote>
+</li>
+<li><p><strong>filename</strong></p>
+<blockquote>
+<p>输出的内容太多，您可以尝试使用<code>apt-file search</code></p>
+</blockquote>
+</li>
+<li><p><strong>sfilename | grep -w filename</strong></p>
+<blockquote>
+<p><code>s</code>（只显示指定字符串作为完整的单词出现在其中的那些文件名）或者类似方法，例如：<code>apt-file search filename | grep /bin/</code>（只显示位于诸如/bin或/usr/bin这些文件夹中的文件，如果您要查找的是某个特定的执行文件的话，这样做是有帮助的）。</p>
+</blockquote>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Alex Wu (Yinghao)
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="http://www.simpletodo.fun/2020/02/24/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" title="Linux常用命令">http://www.simpletodo.fun/2020/02/24/Linux常用命令/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/24/Ubuntu-root%E7%94%A8%E6%88%B7%E4%B8%8Bjava-version%E6%97%A0%E6%B3%95%E8%8E%B7%E5%8F%96java%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/" rel="prev" title="Ubuntu root用户下java -version无法获取java环境变量解决办法">
+      <i class="fa fa-chevron-left"></i> Ubuntu root用户下java -version无法获取java环境变量解决办法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/25/Jmeter/" rel="next" title="Jmeter">
+      Jmeter <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#系统"><span class="nav-text">系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#资源"><span class="nav-text">资源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#磁盘和分区"><span class="nav-text">磁盘和分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络"><span class="nav-text">网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程"><span class="nav-text">进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户"><span class="nav-text">用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务"><span class="nav-text">服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#程序"><span class="nav-text">程序</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alex Wu (Yinghao)"
+      src="https://upyun.oneone.life/uPic/nCsOY9.jpg">
+  <p class="site-author-name" itemprop="name">Alex Wu (Yinghao)</p>
+  <div class="site-description" itemprop="description">😻一一是个小天使~😚</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/AlexWuYh" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;AlexWuYh" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Alex_WuYh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Alex_WuYh" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/alex_wuyh" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;alex_wuyh" rel="noopener" target="_blank"><i class="fa fa-fw fa-instagram"></i>Instagram</a>
+      </span>
+  </div>
+
+
+
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alex Wu (Yinghao)</span>
+</div>
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共6.4k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'o5gq6eLbupSlKq678zx1aKcd-gzGzoHsz',
+      appKey     : 'S2CU3haJIhCbfVoIxhtrIzNp',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

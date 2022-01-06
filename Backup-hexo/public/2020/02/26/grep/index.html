@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.simpletodo.fun","root":"/","scheme":"Pisces","version":"7.7.1","exturl":false,"sidebar":{"position":"left","width":260,"display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="用法: grep [选项]… PATTERN [FILE]…在每个 FILE 或是标准输入中查找 PATTERN。默认的 PATTERN 是一个基本正则表达式(缩写为 BRE)。例如: grep -i &#39;hello world&#39; menu.h main.c  正则表达式选择与解释:   12345678910-E, --extended-regexp     PATTERN 是一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="grep">
+<meta property="og:url" content="http://www.simpletodo.fun/2020/02/26/grep/index.html">
+<meta property="og:site_name" content="Simple Life">
+<meta property="og:description" content="用法: grep [选项]… PATTERN [FILE]…在每个 FILE 或是标准输入中查找 PATTERN。默认的 PATTERN 是一个基本正则表达式(缩写为 BRE)。例如: grep -i &#39;hello world&#39; menu.h main.c  正则表达式选择与解释:   12345678910-E, --extended-regexp     PATTERN 是一个">
+<meta property="article:published_time" content="2020-02-26T14:39:36.000Z">
+<meta property="article:modified_time" content="2020-02-27T08:06:09.172Z">
+<meta property="article:author" content="Alex Wu (Yinghao)">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.simpletodo.fun/2020/02/26/grep/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>grep | Simple Life</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Simple Life</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">Alex's Blog</p>
+  </div>
+
+  <div class="site-nav-right"></div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fa fa-fw fa-heartbeat"></i>Commonweal 404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://www.simpletodo.fun/2020/02/26/grep/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://upyun.oneone.life/uPic/nCsOY9.jpg">
+      <meta itemprop="name" content="Alex Wu (Yinghao)">
+      <meta itemprop="description" content="😻一一是个小天使~😚">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Simple Life">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          grep
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-02-26 22:39:36" itemprop="dateCreated datePublished" datetime="2020-02-26T22:39:36+08:00">2020-02-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-02-27 16:06:09" itemprop="dateModified" datetime="2020-02-27T16:06:09+08:00">2020-02-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/02/26/grep/" class="post-meta-item leancloud_visitors" data-flag-title="grep" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2020/02/26/grep/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/02/26/grep/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>用法: grep [选项]… PATTERN [FILE]…<br>在每个 FILE 或是标准输入中查找 PATTERN。<br>默认的 PATTERN 是一个基本正则表达式(缩写为 BRE)。<br>例如: <code>grep -i &#39;hello world&#39; menu.h main.c</code></p>
+<ul>
+<li><p>正则表达式选择与解释:</p>
+  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-E, --extended-regexp     PATTERN 是一个可扩展的正则表达式(缩写为 ERE)</span><br><span class="line">-F, --fixed-strings       PATTERN 是一组由断行符分隔的字符串。</span><br><span class="line">-G, --basic-regexp        PATTERN 是一个基本正则表达式(缩写为 BRE)</span><br><span class="line">-P, --perl-regexp         PATTERN 是一个 Perl 正则表达式</span><br><span class="line">-e, --regexp=PATTERN      用 PATTERN 来进行匹配操作</span><br><span class="line">-f, --file=FILE           从 FILE 中取得 PATTERN</span><br><span class="line">-i, --ignore-case         忽略大小写</span><br><span class="line">-w, --word-regexp         强制 PATTERN 仅完全匹配字词</span><br><span class="line">-x, --line-regexp         强制 PATTERN 仅完全匹配一行</span><br><span class="line">-z, --null-data           一个 0 字节的数据行，但不是空行</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+</li>
+<li><p>杂项:</p>
+   <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-s, --no-messages         不显示错误信息</span><br><span class="line">-v, --invert-match        选中不匹配的行</span><br><span class="line">-V, --version             显示版本信息并退出</span><br><span class="line">    --help                显示此帮助并退出</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>输出控制:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">-m, --max-count=NUM       NUM 次匹配后停止</span><br><span class="line">-b, --byte-offset         输出的同时打印字节偏移</span><br><span class="line">-n, --line-number         输出的同时打印行号</span><br><span class="line">    --line-buffered       每行输出清空</span><br><span class="line">-H, --with-filename       为每一匹配项打印文件名</span><br><span class="line">-h, --no-filename         输出时不显示文件名前缀</span><br><span class="line">    --label=LABEL         将LABEL 作为标准输入文件名前缀</span><br><span class="line">-o, --only-matching       只显示匹配PATTERN 部分的行</span><br><span class="line">-q, --quiet, --silent     不显示所有常规输出</span><br><span class="line">    --binary-files=TYPE   设定二进制文件的TYPE 类型；</span><br><span class="line">                          TYPE 可以是`binary', `text', 或`without-match'</span><br><span class="line">-a, --text                等同于 --binary-files=text</span><br><span class="line">-I                        等同于 --binary-files=without-match</span><br><span class="line">-d, --directories=ACTION  读取目录的方式；</span><br><span class="line">                          ACTION 可以是`read', `recurse',或`skip'</span><br><span class="line">-D, --devices=ACTION      读取设备、先入先出队列、套接字的方式；</span><br><span class="line">                          ACTION 可以是`read'或`skip'</span><br><span class="line">-r, --recursive           等同于--directories=recurse</span><br><span class="line">-R, --dereference-recursive       同上，但遍历所有符号链接</span><br><span class="line">    --include=FILE_PATTERN  只查找匹配FILE_PATTERN 的文件</span><br><span class="line">    --exclude=FILE_PATTERN  跳过匹配FILE_PATTERN 的文件和目录</span><br><span class="line">    --exclude-from=FILE   跳过所有除FILE 以外的文件</span><br><span class="line">    --exclude-dir=PATTERN  跳过所有匹配PATTERN 的目录。</span><br><span class="line">-L, --files-without-match  只打印不匹配FILEs 的文件名</span><br><span class="line">-l, --files-with-matches  只打印匹配FILES 的文件名</span><br><span class="line">-c, --count               只打印每个FILE 中的匹配行数目</span><br><span class="line">-T, --initial-tab         行首tabs 分隔（如有必要）</span><br><span class="line">-Z, --null                在FILE 文件最后打印空字符</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>文件控制:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-B, --before-context=NUM  打印文本及其前面NUM 行</span><br><span class="line">-A, --after-context=NUM   打印文本及其后面NUM 行</span><br><span class="line">-C, --context=NUM         打印NUM 行输出文本</span><br><span class="line">-NUM                      等同于 --context=NUM</span><br><span class="line">    --color[=WHEN],</span><br><span class="line">    --colour[=WHEN]       使用标记高亮匹配字串；</span><br><span class="line">                          WHEN 可以是`always', `never'或`auto'</span><br><span class="line">-U, --binary              不要清除行尾的CR 字符(MSDOS/Windows)</span><br><span class="line">-u, --unix-byte-offsets   忽略CR 字符，报告字节偏移</span><br><span class="line">                        (MSDOS/Windows)</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<p><code>egrep</code> 即<code>grep -E</code>。<code>fgrep</code> 即<code>grep -F</code>。<br>直接调用<code>egrep</code> 或是<code>fgrep</code> 均已被废弃。<br>若FILE 为 -，将读取标准输入。不带FILE，读取当前目录，除非命令行中指定了-r 选项。<br>如果少于两个FILE 参数，就要默认使用-h 参数。<br>如果有任意行被匹配，那退出状态为 0，否则为 1；<br>如果有错误产生，且未指定 -q 参数，那退出状态为 2。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Alex Wu (Yinghao)
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="http://www.simpletodo.fun/2020/02/26/grep/" title="grep">http://www.simpletodo.fun/2020/02/26/grep/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/25/Linux%E4%B8%8B%E5%90%84%E6%96%87%E4%BB%B6%E5%A4%B9%E7%9A%84%E4%BD%9C%E7%94%A8/" rel="prev" title="Linux下各文件夹的作用">
+      <i class="fa fa-chevron-left"></i> Linux下各文件夹的作用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/07/%E5%9C%A8Ubuntu16.04%E5%92%8CCentos7%E4%B8%8A%E5%90%AF%E7%94%A8TCP-BBR/" rel="next" title="在Ubuntu16.04和Centos7上启用TCP-BBR">
+      在Ubuntu16.04和Centos7上启用TCP-BBR <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alex Wu (Yinghao)"
+      src="https://upyun.oneone.life/uPic/nCsOY9.jpg">
+  <p class="site-author-name" itemprop="name">Alex Wu (Yinghao)</p>
+  <div class="site-description" itemprop="description">😻一一是个小天使~😚</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/AlexWuYh" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;AlexWuYh" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Alex_WuYh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Alex_WuYh" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/alex_wuyh" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;alex_wuyh" rel="noopener" target="_blank"><i class="fa fa-fw fa-instagram"></i>Instagram</a>
+      </span>
+  </div>
+
+
+
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alex Wu (Yinghao)</span>
+</div>
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共6.4k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'o5gq6eLbupSlKq678zx1aKcd-gzGzoHsz',
+      appKey     : 'S2CU3haJIhCbfVoIxhtrIzNp',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
