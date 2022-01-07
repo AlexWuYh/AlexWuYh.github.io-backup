@@ -11,7 +11,7 @@ categories:
 ![image.png](https://cdn.nlark.com/yuque/0/2021/png/770522/1637207424732-6523c4b3-ce60-4861-a70f-5ae1dad1eb81.png#clientId=uecca7810-d701-4&from=paste&id=ub9f36f99&margin=%5Bobject%20Object%5D&name=image.png&originHeight=930&originWidth=1647&originalType=url&ratio=1&size=244256&status=done&style=none&taskId=u096d0cc3-33c7-4f89-924d-1d6828a5204)
 
 <br />pinpoint是开源在github上的一款全链路APM监控工具，提供了无侵入式的调用链监控、方法执行详情查看、应用状态信息监控等功能。基于GoogleDapper论文进行的实现，与另一款开源的全链路分析工具Zipkin类似，但相比Zipkin提供了无侵入式、代码维度的监控等更多的特性。 Pinpoint支持的功能比较丰富，可以支持如下几种功能：
-
+<!--more-->
 - 服务拓扑图：
 
     对整个系统中应用的调用关系进行了可视化的展示，单击某个服务节点，可以显示该节点的    详细信息，比如当前节点状态、请求数量等

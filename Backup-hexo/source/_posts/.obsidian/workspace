@@ -10,7 +10,7 @@
           "type": "markdown",
           "state": {
             "file": "PinPoint安装配置.md",
-            "mode": "preview",
+            "mode": "source",
             "source": false
           }
         }
@@ -90,13 +90,14 @@
   "active": "1e000d5e29b5bf70",
   "lastOpenFiles": [
     "PinPoint安装配置.md",
-    "让其他用户使用oh-my-zsh.md",
+    "Shadowsocks-Kcptun.md",
     "在Ubuntu16.04和Centos7上启用TCP-BBR.md",
-    "Docker-常用基础命令.md",
     "grep.md",
+    "Linux常用命令.md",
+    "让其他用户使用oh-my-zsh.md",
+    "Docker-常用基础命令.md",
     "hello-world.md",
     "Jmeter.md",
-    "vimrc-备份.md",
-    "Shadowsocks-Kcptun.md"
+    "vimrc-备份.md"
   ]
 }
