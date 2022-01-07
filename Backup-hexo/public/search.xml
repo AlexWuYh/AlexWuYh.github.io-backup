@@ -1,19 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Shadowsocks-Kcptun</title>
+    <title>PinPoint安装配置</title>
+    <url>/2022/01/07/PinPoint%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637207424732-6523c4b3-ce60-4861-a70f-5ae1dad1eb81.png#clientId=uecca7810-d701-4&from=paste&id=ub9f36f99&margin=%5Bobject%20Object%5D&name=image.png&originHeight=930&originWidth=1647&originalType=url&ratio=1&size=244256&status=done&style=none&taskId=u096d0cc3-33c7-4f89-924d-1d6828a5204" alt="image.png"></p>
+<p><br />pinpoint是开源在github上的一款全链路APM监控工具，提供了无侵入式的调用链监控、方法执行详情查看、应用状态信息监控等功能。基于GoogleDapper论文进行的实现，与另一款开源的全链路分析工具Zipkin类似，但相比Zipkin提供了无侵入式、代码维度的监控等更多的特性。 Pinpoint支持的功能比较丰富，可以支持如下几种功能：</p>
+<a id="more"></a>
+<ul>
+<li><p>服务拓扑图：</p>
+<p>  对整个系统中应用的调用关系进行了可视化的展示，单击某个服务节点，可以显示该节点的    详细信息，比如当前节点状态、请求数量等</p>
+</li>
+<li><p>实时活跃线程图：</p>
+<p>  监控应用内活跃线程的执行情况，对应用的线程执行性能可以有比较直观的了解</p>
+</li>
+<li><p>请求响应散点图：</p>
+<p>  以时间维度进行请求计数和响应时间的展示，拖过拖动图表可以选择对应的请求查看执行的详细情况</p>
+</li>
+<li><p>请求调用栈查看：</p>
+<p>  对分布式环境中每个请求提供了代码维度的可见性，可以在页面中查看请求针对到代码维度的执行详情，帮助查找请求的瓶颈和故障原因。</p>
+</li>
+<li><p>应用状态、机器状态检查：</p>
+<p>  通过这个功能可以查看相关应用程序的其他的一些详细信息，比如CPU使用情况，内存状态、垃圾收集状态，TPS和JVM信息等参数。</p>
+</li>
+</ul>
+<p>总体来说，使用pinpoint的一些优点：</p>
+<ul>
+<li><p>可以掌握系统的整体响应速度情况，对系统运行情况能比较清晰</p>
+</li>
+<li><p>可以掌握各节点的响应速度情况，比如第三方服务接口，redis，mysql等</p>
+</li>
+<li><p>可以掌握单次请求的具体服务链路耗时情况，定位性能瓶颈</p>
+</li>
+<li><p>单次请求的具体服务链路请求信息，对于排查问题能提供帮助</p>
+</li>
+<li><p>监控各服务的JVM、线程池、数据库连接池使用情况，尤其是对分布式服务系统来说</p>
+</li>
+</ul>
+<p><br /><strong>github地址：</strong><br />​</p>
+<p>项目地址：<a href="https://github.com/pinpoint-apm/pinpoint" target="_blank" rel="noopener">https://github.com/pinpoint-apm/pinpoint</a><br />官方docker部署地址：<a href="https://github.com/pinpoint-apm/pinpoint-docker" target="_blank" rel="noopener">https://github.com/pinpoint-apm/pinpoint-docker</a><br><a name="kOl6Q"></a></p>
+<h2 id="架构组成"><a href="#架构组成" class="headerlink" title="架构组成"></a>架构组成</h2><p><br />Pinpoint 主要由 3 个组件外加 Hbase 数据库组成，三个组件分别为：Agent、Collector 和 Web UI<br />​<br /></p>
+<ul>
+<li><p>Agent组件：</p>
+<p>  用于收集应用端监控数据，无侵入式，只需要在启动命令中加入部分参数即可</p>
+</li>
+<li><p>Collector组件：</p>
+<p>  数据收集模块，接收Agent发送过来的监控数据，并存储到HBase</p>
+</li>
+<li><p>WebUI：</p>
+<p>  监控展示模块，展示系统调用关系、调用详情、应用状态等，并支持报警等功能</p>
+</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637206471189-5cf9cd51-a00a-4f38-9105-c1c78a35641b.png#clientId=uecca7810-d701-4&from=paste&id=uee3b6724&margin=%5Bobject%20Object%5D&name=image.png&originHeight=428&originWidth=769&originalType=url&ratio=1&size=79922&status=done&style=none&taskId=uec2bfbbf-4bd0-4d6a-8c23-f94b857a0b4" alt="image.png"><br /></p>
+<p><a name="TRU4Z"></a></p>
+<h2 id="安装Collector组件"><a href="#安装Collector组件" class="headerlink" title="安装Collector组件"></a>安装Collector组件</h2><p><br />使用docker-compose安装最新版本：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 克隆官方的docker部署git</span></span><br><span class="line">git clone https://github.com/naver/pinpoint-docker.git</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 进入<span class="built_in">clone</span>的目录</span></span><br><span class="line">cd pinpoint-docker</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用docker-compose拉取镜像和运行服务。注意docker-compose是需要单独安装的</span></span><br><span class="line">docker-compose pull &amp;&amp; docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>如果想安装历史或指定版本，可以直接指定git tags：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 克隆官方的docker部署git</span></span><br><span class="line">git clone https://github.com/naver/pinpoint-docker.git</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 进入<span class="built_in">clone</span>的目录</span></span><br><span class="line">cd pinpoint-docker</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用git命令切换到指定版本的tag</span></span><br><span class="line">git checkout &#123;tag&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用docker-compose拉取镜像和运行服务。注意docker-compose是需要单独安装的</span></span><br><span class="line">docker-compose pull &amp;&amp; docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+
+<p><br />如果部署的时候想使用一些自定义配置，例如指定的端口，可以通过修改 <code>docker-compose.yml</code> 和 <code>.env</code> 中对应的配置来实现，<strong>建议优先通过修改.env文件来做自定义配置</strong></p>
+<p>修改端口可以直接修改.env文件，默认端口是Pinpoint-Web：8079，QuickStart：8000和Flink：8081</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637208002097-34f78613-3a44-4726-afcd-118644e88403.png#clientId=uecca7810-d701-4&from=paste&height=301&id=u65ec94f6&margin=%5Bobject%20Object%5D&name=image.png&originHeight=602&originWidth=696&originalType=binary&ratio=1&size=40187&status=done&style=none&taskId=u8df20c1c-739c-4fcf-9232-9f0f9624ae0&width=348" alt="image.png"></p>
+<p>部署完成之后，使用<code>docker-compose ps</code>命令即可查看所有容器：</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637221994340-ca180a00-08cd-4f89-aa20-863d765454f1.png?x-oss-process=image%2Fresize%2Cw_1500%2Climit_0" alt=""></p>
+<p>访问 <a href="http://xx.xx.xx.xx:8079/" target="_blank" rel="noopener">http://xx.xx.xx.xx:8079/</a> 即可浏览pinpoint页面<br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637222843353-36e02114-16b3-43f0-aef8-2b404db837e7.png?x-oss-process=image%2Fresize%2Cw_1500%2Climit_0" alt=""></p>
+<h2 id="安装配置Agent组件"><a href="#安装配置Agent组件" class="headerlink" title="安装配置Agent组件"></a>安装配置Agent组件</h2><p>从<code>github</code>中<code>pinpoint</code>的<a href="https://github.com/pinpoint-apm/pinpoint/releases" target="_blank" rel="noopener">Release发布页面</a>中下载和Collector组件版本一致的Agent程序包</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637218825210-35247c2e-7552-450d-9c43-87b42032035f.png" alt=""></p>
+<p>将Agent程序包上传到需要监控的服务器上，解压压缩包，修改<code>pinpoint.config</code>配置文件，一般只需修改文件中的<code>profiler.collector.ip=127.0.0.1</code>为前面所部署的Collector组件所在IP地址</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637220650288-f3e22d76-118f-42dd-828a-0a781deb1889.png?x-oss-process=image%2Fresize%2Cw_1032%2Climit_0" alt="image alt"></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637221323192-df61d479-750c-4f3c-acb7-6e8d22d100c9.png?x-oss-process=image%2Fresize%2Cw_824%2Climit_0" alt="image alt"></p>
+<ul>
+<li>配置文件分为<code>local</code>和<code>Release</code>版本，选择任一一个修改即可，但是需要在<code>pinpoint-root.config</code>文件中指定对应的配置版本<br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637220823104-c25a8f32-39bd-4c39-9d1a-923c77c090ac.png?x-oss-process=image%2Fresize%2Cw_819%2Climit_0" alt="image alt"></li>
+<li>如果在多台服务器上部署了应用，那么就需要在多台机器上部署Agent组件</li>
+</ul>
+<h3 id="配置监听应用"><a href="#配置监听应用" class="headerlink" title="配置监听应用"></a>配置监听应用</h3><p>pinpoint的监控完全是无侵入式的，配置起来也很简单，只需要在java应用的启动命令增加几个参数即可：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> <span class="variable">$&#123;pinpointPath&#125;</span>是agent组件存放的路径，类似于JAVA_HOME</span></span><br><span class="line">-javaagent:$&#123;pinpointPath&#125;/pinpoint-bootstrap-2.3.1.jar</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="string">'dpccb'</span>可自定义命名，在pinpoint页面上显示的名称</span></span><br><span class="line">-Dpinpoint.applicationName=dpccb </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">id可自定义命名，可以和Name一样</span></span><br><span class="line">-Dpinpoint.agentId=dpccb</span><br></pre></td></tr></table></figure>
+
+<p>启动应用程序，打开应用页面访问一下，然后登陆pinpoint的Web页面即可看到相关的监控内容了</p>
+<p>如果应用是通过容器方式运行的，也可以通过修改启动脚本和Dockerfile的方式来配置agent的监听</p>
+<p>//修改启动命令<br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637223237860-a6bbf591-0c2b-43ab-a793-5638823776e8.png" alt=""></p>
+<p>//把agent的存放目录挂载到应用的容器内<br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637223390002-c6ff6722-09a0-426c-bd0d-9cf2cbfc1136.png" alt=""></p>
+<h2 id="pinpoint功能介绍"><a href="#pinpoint功能介绍" class="headerlink" title="pinpoint功能介绍"></a>pinpoint功能介绍</h2><p><u><strong>详细使用教程可以参考这篇文章：<a href="https://blog.csdn.net/weixin_43931358/article/details/107671436" target="_blank" rel="noopener">pinpoint使用详解（图文版）</a></strong></u></p>
+<h3 id="首页"><a href="#首页" class="headerlink" title="首页"></a>首页</h3><p>选择一个需要查看的应用，即可在首页中以图形化的方式展示用户请求、服务间的调用关系等信息。另外还有响应时间分析图、调用散点图、响应时长分布、等待时长分布等。在右侧的调用统计图中用鼠标左键框选(如图上红框)即可查看选中部分的调用详情</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637223668576-e2d68eab-7b95-456f-890a-caf23463f0e8.png?x-oss-process=image%2Fresize%2Cw_1500%2Climit_0" alt=""></p>
+<h3 id="调用详细信息"><a href="#调用详细信息" class="headerlink" title="调用详细信息"></a>调用详细信息</h3><p>详情页，选择一个请求后下方会显示其详细信息，包含响应时间，请求过程中涉及的代码方法，sql语句等</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637224277566-811864f4-b821-4141-a4c5-d34a3e8f167f.png?x-oss-process=image%2Fresize%2Cw_1500%2Climit_0" alt=""></p>
+<p>选择混合视图后还可以同时查看调用树、服务器性能占用、server map等信息<br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637224646777-27af178d-42fa-414e-94ac-bbd324e877ec.png" alt=""></p>
+<h3 id="应用检查工具"><a href="#应用检查工具" class="headerlink" title="应用检查工具"></a>应用检查工具</h3><p>查看应用的其他细节，如CPU使用、内存/垃圾收集、TPS和JVM参数<br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637224976595-936ab9da-68a6-44b7-b07a-b74de01c45d4.png" alt=""><br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637225035796-a4d76b2b-07f9-40f3-8b7f-b6614e686944.png?x-oss-process=image%2Fresize%2Cw_1500%2Climit_0" alt=""><br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637225079828-e98e4181-a9d1-4f5c-a71d-7cd8912d660e.png?x-oss-process=image%2Fresize%2Cw_1500%2Climit_0" alt=""></p>
+]]></content>
+      <categories>
+        <category>PinPoint</category>
+      </categories>
+      <tags>
+        <tag>PinPoint</tag>
+        <tag>APM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2022/01/07/hello-world/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><a id="more"></a>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Shadowsocks &amp; Kcptun  | v2ray</title>
     <url>/2020/03/08/Shadowsocks-Kcptun/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h2><h3 id="Step-1、安装Docker"><a href="#Step-1、安装Docker" class="headerlink" title="Step 1、安装Docker"></a>Step 1、安装Docker</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">curl https://get.docker.com &gt; docker_install.sh</span><br><span class="line">bash docker_install.sh</span><br><span class="line">systemctl start docker</span><br></pre></td></tr></table></figure>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="SS-amp-kcptun"><a href="#SS-amp-kcptun" class="headerlink" title="SS &amp; kcptun"></a>SS &amp; kcptun</h2><h3 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h3><h4 id="Step-1、安装Docker"><a href="#Step-1、安装Docker" class="headerlink" title="Step 1、安装Docker"></a>Step 1、安装Docker</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">curl https://get.docker.com &gt; docker_install.sh</span><br><span class="line">bash docker_install.sh</span><br><span class="line">systemctl start docker</span><br></pre></td></tr></table></figure>
+<p>国内极速下载：<br><code>curl -sSL https://get.daocloud.io/docker | sh</code></p>
+<p>Docker 国内镜像源：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> vi /etc/docker/daemon.json</span></span><br><span class="line">&#123;</span><br><span class="line">    "registry-mirrors": ["http://hub-mirror.c.163.com"]</span><br><span class="line">&#125;</span><br><span class="line">systemctl restart docker.service</span><br></pre></td></tr></table></figure>
 
-<h3 id="Step-2、-运行科学容器"><a href="#Step-2、-运行科学容器" class="headerlink" title="Step 2、 运行科学容器"></a>Step 2、 运行科学容器</h3><a id="more"></a>
+<a id="more"></a>
 
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run -dt --restart=always --name $name -p 10001:6443 -p10001:6443/udp -p 20001:6500/udp mritd/shadowsocks -m "ss-server" -s "-s 0.0.0.0 -p 6443 -m aes-256-cfb -k $password --fast-open -u" -x -e "kcpserver" -k "-t 127.0.0.1:6443 -l :6500 -mode fast2 --key $kcpPassword"</span><br></pre></td></tr></table></figure>
+<h4 id="Step-2、-运行科学容器"><a href="#Step-2、-运行科学容器" class="headerlink" title="Step 2、 运行科学容器"></a>Step 2、 运行科学容器</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run -dt --restart=always --name $name -p 10001:6443 -p10001:6443/udp -p 20001:6500/udp mritd/shadowsocks -m "ss-server" -s "-s 0.0.0.0 -p 6443 -m chacha20-ietf-poly1305 -k $password --fast-open -u" -x -e "kcpserver" -k "-t 127.0.0.1:6443 -l :6500 -mode fast2 --key $kcpPassword"</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p><code>$</code>开头的为自定义信息</p>
 </blockquote>
-<h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><h3 id="Win"><a href="#Win" class="headerlink" title="Win"></a>Win</h3><ul>
-<li><p><strong>shadowsocks-windows</strong></p>
+<p><img src="https://ws1.sinaimg.cn/large/7eff6b59gy1g79m4pr5vej21fq048aa9.jpg" alt="此处输入图片的描述"></p>
+<h3 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h3><h4 id="Win"><a href="#Win" class="headerlink" title="Win"></a>Win</h4><ul>
+<li><p><strong>shadowsocks-windows</strong><br><img src="http://static.zybuluo.com/AlexWuYh/qdy26d0hnhf55rxsosay5q3u/Shadowsocks.exe" alt="Shadowsocks.exe-2350kB"></p>
 <ul>
 <li><code>https://github.com/shadowsocks/shadowsocks-windows</code></li>
 <li>如何使用：<ul>
@@ -22,7 +142,7 @@
 </li>
 </ul>
 </li>
-<li><p><strong>kcptun插件</strong></p>
+<li><p><strong>kcptun插件</strong><br><img src="http://static.zybuluo.com/AlexWuYh/11hjn4o1bxxdnt5u5e8xa03x/client_windows_amd64.exe" alt="client_windows_amd64.exe-3475.5kB"></p>
 <ul>
 <li><code>https://github.com/shadowsocks/kcptun</code></li>
 </ul>
@@ -30,14 +150,12 @@
 </ul>
 <ul>
 <li><p><strong>参数设置：</strong></p>
-<p><img src="https://upyun.oneone.life/uPic/YDVI1H.png" alt="YDVI1H"></p>
-</li>
-</ul>
+<p>  <img src="https://upyun.oneone.life/uPic/YDVI1H.png" alt="image.png-140.3kB"></p>
 <ul>
 <li><p>插件程序：</p>
 <ul>
 <li>插件选项中输入 <code>client_windows_amd64</code> 的全路径<blockquote>
-<p>Win系统</p>
+<p>例如：<code>D:\00_wuyh\AWS-Key\client_windows_amd64.exe</code></p>
 </blockquote>
 </li>
 </ul>
@@ -45,39 +163,82 @@
 <li><p>插件选项：</p>
 <ul>
 <li><code>dscp=20001;mode=fast2;key=$key;mtu=1350</code><blockquote>
-<p><code>$key</code>，替换为容器中配置的密码</p>
+<p>把<code>$key</code>替换为所配置的<code>密码</code></p>
 </blockquote>
 </li>
 </ul>
 </li>
 </ul>
-<h3 id="Mac"><a href="#Mac" class="headerlink" title="Mac"></a>Mac</h3><ul>
-<li><p><strong>shadowsocks-MacOS</strong></p>
-<ul>
-<li><code>https://github.com/yangfeicheung/Shadowsocks-X/releases</code></li>
-</ul>
-</li>
-<li><p>kcptun &amp; 参数配置参考<code>Win</code>配置</p>
 </li>
 </ul>
-<h3 id="Android"><a href="#Android" class="headerlink" title="Android"></a>Android</h3><ul>
+<h4 id="Android"><a href="#Android" class="headerlink" title="Android"></a>Android</h4><ul>
 <li><p><strong>shadowsocks-android</strong></p>
 <ul>
-<li><code>https://github.com/shadowsocks/shadowsocks-android</code></li>
+<li><code>https://github.com/shadowsocks/shadowsocks-android</code><br><img src="http://static.zybuluo.com/AlexWuYh/2gkt93yhg57f1kv2bq3vvyi7/shadowsocks-arm64-v8a-4.8.4.apk" alt="shadowsocks-arm64-v8a-4.8.4.apk-4702.3kB"></li>
 </ul>
 </li>
 <li><p><strong>kcptun-android</strong></p>
 <ul>
-<li><code>https://github.com/shadowsocks/kcptun-android</code></li>
+<li><code>https://github.com/shadowsocks/kcptun-android</code><br><img src="http://static.zybuluo.com/AlexWuYh/1x6nnarcc0lph5prexjj4e4o/kcptun-arm64-v8a-1.0.0.apk" alt="kcptun-arm64-v8a-1.0.0.apk-3913.8kB"></li>
 </ul>
 </li>
-</ul>
+<li><p><strong>参数配置：</strong></p>
 <ul>
-<li><strong>参数配置：</strong><ul>
 <li>参考win配置</li>
 </ul>
 </li>
 </ul>
+<hr>
+<h2 id="v2ray"><a href="#v2ray" class="headerlink" title="v2ray"></a>v2ray</h2><p><code>v2ray</code>一键安装/卸载脚本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo -i</span><br><span class="line">bash &lt;(curl -s -L https://git.io/v2ray.sh)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>直接运行上面的脚本，选择<code>1</code>进行安装</p>
+<p>  <img src="https://upyun.oneone.life/upyun-img/20210406144842.png" alt=""></p>
+</li>
+<li><p>选择传输协议，根据自己需要进行选择（我这里只接用的默认<code>tcp</code>，回车即可）</p>
+<p>  <img src="https://upyun.oneone.life/upyun-img/20210406144904.png" alt=""></p>
+</li>
+<li><p>配置端口和广告拦截，根据自己需求来配置，如果使用默认回车即可</p>
+<p>  <img src="https://upyun.oneone.life/upyun-img/20210406144936.png" alt=""></p>
+</li>
+<li><p>配置是否开启<code>Shadowsocks</code>，开启则选<code>Y</code>，然后配置相关参数</p>
+<p>  <img src="https://upyun.oneone.life/upyun-img/20210406145053.png" alt=""></p>
+</li>
+<li><p>配置完成之后会打印出<code>V2Ray</code>和<code>Shadowsocks</code>的配置参数（使用<code>v2ray url</code>命令可以输出vmess URL链接方便一键导入到客户端中），然后把这些参数配置到对应的客户端（打印信息中有v2ray客户端的下载地址）中即可开始科学上网啦</p>
+<p>  <img src="https://upyun.oneone.life/upyun-img/20210406145250.png" alt=""></p>
+<p>  <img src="https://upyun.oneone.life/upyun-img/20210406145332.png" alt=""></p>
+</li>
+<li><p>在命令行直接输入<code>v2ray</code>命令可以显示出功能菜单</p>
+<p>  <img src="https://upyun.oneone.life/upyun-img/20210406145412.png" alt=""></p>
+</li>
+</ul>
+<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><h4 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h4><p><code>https://github.com/2dust/v2rayN/releases/latest</code></p>
+<h4 id="Mac"><a href="#Mac" class="headerlink" title="Mac"></a>Mac</h4><p><code>https://github.com/insisttech/v2rayX-copy/releases</code></p>
+<h4 id="Android-1"><a href="#Android-1" class="headerlink" title="Android"></a>Android</h4><p><code>https://github.com/2dust/v2rayNG/releases</code></p>
+<h2 id="SwitchyOmega配置"><a href="#SwitchyOmega配置" class="headerlink" title="SwitchyOmega配置"></a>SwitchyOmega配置</h2><p>SwitchyOmega是Chrome浏览器上的代理扩展插件,根据预先设置好的代理规则，轻松快捷的管理和智能切换多个代理设置</p>
+<blockquote>
+<p>比较适合linux环境下使用，因为目前linux环境下的SS没有PAC配置，也没有SS的图形工具，所以建议<code>SwitchyOmega + shadowsocks</code>的方式</p>
+</blockquote>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>直接从浏览器的应用商店中安装，或者直接从<code>github</code>上下载：</p>
+<p><code>https://github.com/FelisCatus/SwitchyOmega/releases</code></p>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><ol>
+<li><p>配置代理服务器</p>
+<p> <img src="https://upyun.oneone.life/upyun-img/20210129185742.png" alt="image.png-56.4kB"></p>
+</li>
+<li><p>配置自动切换规则</p>
+<p> <img src="https://upyun.oneone.life/upyun-img/20210129185942.png" alt="image.png-157.4kB"></p>
+<blockquote>
+<p>规则列表网址：<code>https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt</code></p>
+</blockquote>
+</li>
+<li><p>使用</p>
+<p> <img src="https://upyun.oneone.life/upyun-img/20210129190058.png" alt="image.png-15.2kB"></p>
+<blockquote>
+<p>如果看到浏览器上的SwitchyOmega 图标有显示黄色感叹号，可以直接点击“1个资源未加载”项按提示操作即可，操作完，可看到切换规则处有新添对应规则。</p>
+</blockquote>
+</li>
+</ol>
 ]]></content>
       <categories>
         <category>Linux</category>
@@ -719,24 +880,5 @@
         <tag>Linux</tag>
         <tag>vim</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2020/02/24/hello-world/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><a id="more"></a>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-]]></content>
   </entry>
 </search>
