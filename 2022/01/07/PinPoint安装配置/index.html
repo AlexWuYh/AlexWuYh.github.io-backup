@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.wuyh.life","root":"/","scheme":"Pisces","version":"7.7.1","exturl":false,"sidebar":{"position":"left","width":260,"display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="简介 pinpoint是开源在github上的一款全链路APM监控工具，提供了无侵入式的调用链监控、方法执行详情查看、应用状态信息监控等功能。基于GoogleDapper论文进行的实现，与另一款开源的全链路分析工具Zipkin类似，但相比Zipkin提供了无侵入式、代码维度的监控等更多的特性。 Pinpoint支持的功能比较丰富，可以支持如下几种功能：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PinPoint安装配置">
+<meta property="og:url" content="https://www.wuyh.life/2022/01/07/PinPoint%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:site_name" content="Simple Life">
+<meta property="og:description" content="简介 pinpoint是开源在github上的一款全链路APM监控工具，提供了无侵入式的调用链监控、方法执行详情查看、应用状态信息监控等功能。基于GoogleDapper论文进行的实现，与另一款开源的全链路分析工具Zipkin类似，但相比Zipkin提供了无侵入式、代码维度的监控等更多的特性。 Pinpoint支持的功能比较丰富，可以支持如下几种功能：">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637207424732-6523c4b3-ce60-4861-a70f-5ae1dad1eb81.png#clientId=uecca7810-d701-4&from=paste&id=ub9f36f99&margin=%5Bobject%20Object%5D&name=image.png&originHeight=930&originWidth=1647&originalType=url&ratio=1&size=244256&status=done&style=none&taskId=u096d0cc3-33c7-4f89-924d-1d6828a5204">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637206471189-5cf9cd51-a00a-4f38-9105-c1c78a35641b.png#clientId=uecca7810-d701-4&from=paste&id=uee3b6724&margin=%5Bobject%20Object%5D&name=image.png&originHeight=428&originWidth=769&originalType=url&ratio=1&size=79922&status=done&style=none&taskId=uec2bfbbf-4bd0-4d6a-8c23-f94b857a0b4">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637208002097-34f78613-3a44-4726-afcd-118644e88403.png#clientId=uecca7810-d701-4&from=paste&height=301&id=u65ec94f6&margin=%5Bobject%20Object%5D&name=image.png&originHeight=602&originWidth=696&originalType=binary&ratio=1&size=40187&status=done&style=none&taskId=u8df20c1c-739c-4fcf-9232-9f0f9624ae0&width=348">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637221994340-ca180a00-08cd-4f89-aa20-863d765454f1.png?x-oss-process=image%252Fresize%252Cw_1500%252Climit_0">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637222843353-36e02114-16b3-43f0-aef8-2b404db837e7.png?x-oss-process=image%252Fresize%252Cw_1500%252Climit_0">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637218825210-35247c2e-7552-450d-9c43-87b42032035f.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637220650288-f3e22d76-118f-42dd-828a-0a781deb1889.png?x-oss-process=image%252Fresize%252Cw_1032%252Climit_0">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637221323192-df61d479-750c-4f3c-acb7-6e8d22d100c9.png?x-oss-process=image%252Fresize%252Cw_824%252Climit_0">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637220823104-c25a8f32-39bd-4c39-9d1a-923c77c090ac.png?x-oss-process=image%252Fresize%252Cw_819%252Climit_0">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637223237860-a6bbf591-0c2b-43ab-a793-5638823776e8.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637223390002-c6ff6722-09a0-426c-bd0d-9cf2cbfc1136.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637223668576-e2d68eab-7b95-456f-890a-caf23463f0e8.png?x-oss-process=image%252Fresize%252Cw_1500%252Climit_0">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637224277566-811864f4-b821-4141-a4c5-d34a3e8f167f.png?x-oss-process=image%252Fresize%252Cw_1500%252Climit_0">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637224646777-27af178d-42fa-414e-94ac-bbd324e877ec.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637224976595-936ab9da-68a6-44b7-b07a-b74de01c45d4.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637225035796-a4d76b2b-07f9-40f3-8b7f-b6614e686944.png?x-oss-process=image%252Fresize%252Cw_1500%252Climit_0">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637225079828-e98e4181-a9d1-4f5c-a71d-7cd8912d660e.png?x-oss-process=image%252Fresize%252Cw_1500%252Climit_0">
+<meta property="article:published_time" content="2022-01-07T10:56:00.000Z">
+<meta property="article:modified_time" content="2022-01-07T11:01:50.431Z">
+<meta property="article:author" content="Alex Wu (Yinghao)">
+<meta property="article:tag" content="PinPoint">
+<meta property="article:tag" content="APM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2021/png/770522/1637207424732-6523c4b3-ce60-4861-a70f-5ae1dad1eb81.png#clientId=uecca7810-d701-4&from=paste&id=ub9f36f99&margin=%5Bobject%20Object%5D&name=image.png&originHeight=930&originWidth=1647&originalType=url&ratio=1&size=244256&status=done&style=none&taskId=u096d0cc3-33c7-4f89-924d-1d6828a5204">
+
+<link rel="canonical" href="https://www.wuyh.life/2022/01/07/PinPoint%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>PinPoint安装配置 | Simple Life</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Simple Life</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">Alex's Blog</p>
+  </div>
+
+  <div class="site-nav-right"></div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fa fa-fw fa-heartbeat"></i>Commonweal 404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://www.wuyh.life/2022/01/07/PinPoint%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://upyun.oneone.life/uPic/nCsOY9.jpg">
+      <meta itemprop="name" content="Alex Wu (Yinghao)">
+      <meta itemprop="description" content="😻一一是个小天使~😚">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Simple Life">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PinPoint安装配置
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-01-07 18:56:00 / Modified: 19:01:50" itemprop="dateCreated datePublished" datetime="2022-01-07T18:56:00+08:00">2022-01-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PinPoint/" itemprop="url" rel="index">
+                    <span itemprop="name">PinPoint</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2022/01/07/PinPoint%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/" class="post-meta-item leancloud_visitors" data-flag-title="PinPoint安装配置" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/01/07/PinPoint%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/07/PinPoint%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637207424732-6523c4b3-ce60-4861-a70f-5ae1dad1eb81.png#clientId=uecca7810-d701-4&from=paste&id=ub9f36f99&margin=%5Bobject%20Object%5D&name=image.png&originHeight=930&originWidth=1647&originalType=url&ratio=1&size=244256&status=done&style=none&taskId=u096d0cc3-33c7-4f89-924d-1d6828a5204" alt="image.png"></p>
+<p><br />pinpoint是开源在github上的一款全链路APM监控工具，提供了无侵入式的调用链监控、方法执行详情查看、应用状态信息监控等功能。基于GoogleDapper论文进行的实现，与另一款开源的全链路分析工具Zipkin类似，但相比Zipkin提供了无侵入式、代码维度的监控等更多的特性。 Pinpoint支持的功能比较丰富，可以支持如下几种功能：</p>
+<a id="more"></a>
+<ul>
+<li><p>服务拓扑图：</p>
+<p>  对整个系统中应用的调用关系进行了可视化的展示，单击某个服务节点，可以显示该节点的    详细信息，比如当前节点状态、请求数量等</p>
+</li>
+<li><p>实时活跃线程图：</p>
+<p>  监控应用内活跃线程的执行情况，对应用的线程执行性能可以有比较直观的了解</p>
+</li>
+<li><p>请求响应散点图：</p>
+<p>  以时间维度进行请求计数和响应时间的展示，拖过拖动图表可以选择对应的请求查看执行的详细情况</p>
+</li>
+<li><p>请求调用栈查看：</p>
+<p>  对分布式环境中每个请求提供了代码维度的可见性，可以在页面中查看请求针对到代码维度的执行详情，帮助查找请求的瓶颈和故障原因。</p>
+</li>
+<li><p>应用状态、机器状态检查：</p>
+<p>  通过这个功能可以查看相关应用程序的其他的一些详细信息，比如CPU使用情况，内存状态、垃圾收集状态，TPS和JVM信息等参数。</p>
+</li>
+</ul>
+<p>总体来说，使用pinpoint的一些优点：</p>
+<ul>
+<li><p>可以掌握系统的整体响应速度情况，对系统运行情况能比较清晰</p>
+</li>
+<li><p>可以掌握各节点的响应速度情况，比如第三方服务接口，redis，mysql等</p>
+</li>
+<li><p>可以掌握单次请求的具体服务链路耗时情况，定位性能瓶颈</p>
+</li>
+<li><p>单次请求的具体服务链路请求信息，对于排查问题能提供帮助</p>
+</li>
+<li><p>监控各服务的JVM、线程池、数据库连接池使用情况，尤其是对分布式服务系统来说</p>
+</li>
+</ul>
+<p><br /><strong>github地址：</strong><br />​</p>
+<p>项目地址：<a href="https://github.com/pinpoint-apm/pinpoint" target="_blank" rel="noopener">https://github.com/pinpoint-apm/pinpoint</a><br />官方docker部署地址：<a href="https://github.com/pinpoint-apm/pinpoint-docker" target="_blank" rel="noopener">https://github.com/pinpoint-apm/pinpoint-docker</a><br><a name="kOl6Q"></a></p>
+<h2 id="架构组成"><a href="#架构组成" class="headerlink" title="架构组成"></a>架构组成</h2><p><br />Pinpoint 主要由 3 个组件外加 Hbase 数据库组成，三个组件分别为：Agent、Collector 和 Web UI<br />​<br /></p>
+<ul>
+<li><p>Agent组件：</p>
+<p>  用于收集应用端监控数据，无侵入式，只需要在启动命令中加入部分参数即可</p>
+</li>
+<li><p>Collector组件：</p>
+<p>  数据收集模块，接收Agent发送过来的监控数据，并存储到HBase</p>
+</li>
+<li><p>WebUI：</p>
+<p>  监控展示模块，展示系统调用关系、调用详情、应用状态等，并支持报警等功能</p>
+</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637206471189-5cf9cd51-a00a-4f38-9105-c1c78a35641b.png#clientId=uecca7810-d701-4&from=paste&id=uee3b6724&margin=%5Bobject%20Object%5D&name=image.png&originHeight=428&originWidth=769&originalType=url&ratio=1&size=79922&status=done&style=none&taskId=uec2bfbbf-4bd0-4d6a-8c23-f94b857a0b4" alt="image.png"><br /></p>
+<p><a name="TRU4Z"></a></p>
+<h2 id="安装Collector组件"><a href="#安装Collector组件" class="headerlink" title="安装Collector组件"></a>安装Collector组件</h2><p><br />使用docker-compose安装最新版本：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 克隆官方的docker部署git</span></span><br><span class="line">git clone https://github.com/naver/pinpoint-docker.git</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 进入<span class="built_in">clone</span>的目录</span></span><br><span class="line">cd pinpoint-docker</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用docker-compose拉取镜像和运行服务。注意docker-compose是需要单独安装的</span></span><br><span class="line">docker-compose pull &amp;&amp; docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>如果想安装历史或指定版本，可以直接指定git tags：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 克隆官方的docker部署git</span></span><br><span class="line">git clone https://github.com/naver/pinpoint-docker.git</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 进入<span class="built_in">clone</span>的目录</span></span><br><span class="line">cd pinpoint-docker</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用git命令切换到指定版本的tag</span></span><br><span class="line">git checkout &#123;tag&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用docker-compose拉取镜像和运行服务。注意docker-compose是需要单独安装的</span></span><br><span class="line">docker-compose pull &amp;&amp; docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+
+<p><br />如果部署的时候想使用一些自定义配置，例如指定的端口，可以通过修改 <code>docker-compose.yml</code> 和 <code>.env</code> 中对应的配置来实现，<strong>建议优先通过修改.env文件来做自定义配置</strong></p>
+<p>修改端口可以直接修改.env文件，默认端口是Pinpoint-Web：8079，QuickStart：8000和Flink：8081</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637208002097-34f78613-3a44-4726-afcd-118644e88403.png#clientId=uecca7810-d701-4&from=paste&height=301&id=u65ec94f6&margin=%5Bobject%20Object%5D&name=image.png&originHeight=602&originWidth=696&originalType=binary&ratio=1&size=40187&status=done&style=none&taskId=u8df20c1c-739c-4fcf-9232-9f0f9624ae0&width=348" alt="image.png"></p>
+<p>部署完成之后，使用<code>docker-compose ps</code>命令即可查看所有容器：</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637221994340-ca180a00-08cd-4f89-aa20-863d765454f1.png?x-oss-process=image%2Fresize%2Cw_1500%2Climit_0" alt=""></p>
+<p>访问 <a href="http://xx.xx.xx.xx:8079/" target="_blank" rel="noopener">http://xx.xx.xx.xx:8079/</a> 即可浏览pinpoint页面<br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637222843353-36e02114-16b3-43f0-aef8-2b404db837e7.png?x-oss-process=image%2Fresize%2Cw_1500%2Climit_0" alt=""></p>
+<h2 id="安装配置Agent组件"><a href="#安装配置Agent组件" class="headerlink" title="安装配置Agent组件"></a>安装配置Agent组件</h2><p>从<code>github</code>中<code>pinpoint</code>的<a href="https://github.com/pinpoint-apm/pinpoint/releases" target="_blank" rel="noopener">Release发布页面</a>中下载和Collector组件版本一致的Agent程序包</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637218825210-35247c2e-7552-450d-9c43-87b42032035f.png" alt=""></p>
+<p>将Agent程序包上传到需要监控的服务器上，解压压缩包，修改<code>pinpoint.config</code>配置文件，一般只需修改文件中的<code>profiler.collector.ip=127.0.0.1</code>为前面所部署的Collector组件所在IP地址</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637220650288-f3e22d76-118f-42dd-828a-0a781deb1889.png?x-oss-process=image%2Fresize%2Cw_1032%2Climit_0" alt="image alt"></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637221323192-df61d479-750c-4f3c-acb7-6e8d22d100c9.png?x-oss-process=image%2Fresize%2Cw_824%2Climit_0" alt="image alt"></p>
+<ul>
+<li>配置文件分为<code>local</code>和<code>Release</code>版本，选择任一一个修改即可，但是需要在<code>pinpoint-root.config</code>文件中指定对应的配置版本<br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637220823104-c25a8f32-39bd-4c39-9d1a-923c77c090ac.png?x-oss-process=image%2Fresize%2Cw_819%2Climit_0" alt="image alt"></li>
+<li>如果在多台服务器上部署了应用，那么就需要在多台机器上部署Agent组件</li>
+</ul>
+<h3 id="配置监听应用"><a href="#配置监听应用" class="headerlink" title="配置监听应用"></a>配置监听应用</h3><p>pinpoint的监控完全是无侵入式的，配置起来也很简单，只需要在java应用的启动命令增加几个参数即可：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> <span class="variable">$&#123;pinpointPath&#125;</span>是agent组件存放的路径，类似于JAVA_HOME</span></span><br><span class="line">-javaagent:$&#123;pinpointPath&#125;/pinpoint-bootstrap-2.3.1.jar</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="string">'dpccb'</span>可自定义命名，在pinpoint页面上显示的名称</span></span><br><span class="line">-Dpinpoint.applicationName=dpccb </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">id可自定义命名，可以和Name一样</span></span><br><span class="line">-Dpinpoint.agentId=dpccb</span><br></pre></td></tr></table></figure>
+
+<p>启动应用程序，打开应用页面访问一下，然后登陆pinpoint的Web页面即可看到相关的监控内容了</p>
+<p>如果应用是通过容器方式运行的，也可以通过修改启动脚本和Dockerfile的方式来配置agent的监听</p>
+<p>//修改启动命令<br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637223237860-a6bbf591-0c2b-43ab-a793-5638823776e8.png" alt=""></p>
+<p>//把agent的存放目录挂载到应用的容器内<br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637223390002-c6ff6722-09a0-426c-bd0d-9cf2cbfc1136.png" alt=""></p>
+<h2 id="pinpoint功能介绍"><a href="#pinpoint功能介绍" class="headerlink" title="pinpoint功能介绍"></a>pinpoint功能介绍</h2><p><u><strong>详细使用教程可以参考这篇文章：<a href="https://blog.csdn.net/weixin_43931358/article/details/107671436" target="_blank" rel="noopener">pinpoint使用详解（图文版）</a></strong></u></p>
+<h3 id="首页"><a href="#首页" class="headerlink" title="首页"></a>首页</h3><p>选择一个需要查看的应用，即可在首页中以图形化的方式展示用户请求、服务间的调用关系等信息。另外还有响应时间分析图、调用散点图、响应时长分布、等待时长分布等。在右侧的调用统计图中用鼠标左键框选(如图上红框)即可查看选中部分的调用详情</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637223668576-e2d68eab-7b95-456f-890a-caf23463f0e8.png?x-oss-process=image%2Fresize%2Cw_1500%2Climit_0" alt=""></p>
+<h3 id="调用详细信息"><a href="#调用详细信息" class="headerlink" title="调用详细信息"></a>调用详细信息</h3><p>详情页，选择一个请求后下方会显示其详细信息，包含响应时间，请求过程中涉及的代码方法，sql语句等</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637224277566-811864f4-b821-4141-a4c5-d34a3e8f167f.png?x-oss-process=image%2Fresize%2Cw_1500%2Climit_0" alt=""></p>
+<p>选择混合视图后还可以同时查看调用树、服务器性能占用、server map等信息<br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637224646777-27af178d-42fa-414e-94ac-bbd324e877ec.png" alt=""></p>
+<h3 id="应用检查工具"><a href="#应用检查工具" class="headerlink" title="应用检查工具"></a>应用检查工具</h3><p>查看应用的其他细节，如CPU使用、内存/垃圾收集、TPS和JVM参数<br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637224976595-936ab9da-68a6-44b7-b07a-b74de01c45d4.png" alt=""><br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637225035796-a4d76b2b-07f9-40f3-8b7f-b6614e686944.png?x-oss-process=image%2Fresize%2Cw_1500%2Climit_0" alt=""><br><img src="https://cdn.nlark.com/yuque/0/2021/png/770522/1637225079828-e98e4181-a9d1-4f5c-a71d-7cd8912d660e.png?x-oss-process=image%2Fresize%2Cw_1500%2Climit_0" alt=""></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Alex Wu (Yinghao)
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://www.wuyh.life/2022/01/07/PinPoint%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/" title="PinPoint安装配置">https://www.wuyh.life/2022/01/07/PinPoint安装配置/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/PinPoint/" rel="tag"><i class="fa fa-tag"></i> PinPoint</a>
+              <a href="/tags/APM/" rel="tag"><i class="fa fa-tag"></i> APM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/08/Shadowsocks-Kcptun/" rel="prev" title="Shadowsocks & Kcptun  | v2ray">
+      <i class="fa fa-chevron-left"></i> Shadowsocks & Kcptun  | v2ray
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#架构组成"><span class="nav-text">架构组成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Collector组件"><span class="nav-text">安装Collector组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装配置Agent组件"><span class="nav-text">安装配置Agent组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置监听应用"><span class="nav-text">配置监听应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pinpoint功能介绍"><span class="nav-text">pinpoint功能介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#首页"><span class="nav-text">首页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调用详细信息"><span class="nav-text">调用详细信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用检查工具"><span class="nav-text">应用检查工具</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alex Wu (Yinghao)"
+      src="https://upyun.oneone.life/uPic/nCsOY9.jpg">
+  <p class="site-author-name" itemprop="name">Alex Wu (Yinghao)</p>
+  <div class="site-description" itemprop="description">😻一一是个小天使~😚</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/AlexWuYh" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;AlexWuYh" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Alex_WuYh" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Alex_WuYh" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/alex_wuyh" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;alex_wuyh" rel="noopener" target="_blank"><i class="fa fa-fw fa-instagram"></i>Instagram</a>
+      </span>
+  </div>
+
+
+
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alex Wu (Yinghao)</span>
+</div>
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共8.5k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'o5gq6eLbupSlKq678zx1aKcd-gzGzoHsz',
+      appKey     : 'S2CU3haJIhCbfVoIxhtrIzNp',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
